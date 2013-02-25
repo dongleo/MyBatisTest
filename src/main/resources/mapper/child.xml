@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.snda.sysdev.mapper.ChildMapper">
+    <resultMap id="childMap" type="Child">
+        <id property="id" column="child_id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <!--resultType 和resultMap 不能同时使用-->
+    <select id="selectAll" resultMap="childMap">
+        SELECT * FROM child
+    </select>
+
+    <select id="selectChild" parameterType="Integer" resultMap="childMap">
+        SELECT * FROM child WHERE child_id = #{childId}
+    </select>
+
+    <select id="selectChildByParentId" parameterType="Integer" resultMap="childMap">
+        <!--<include refid="selectAll"/> WHERE parent_id = #{parentId}-->
+        SELECT * FROM child WHERE parent_id = #{parentId}
+    </select>
+
+    <insert id="insertChild" parameterType="Child">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        INSERT INTO child values (#{id}, #{name}, #{parent.id})
+    </insert>
+</mapper>
